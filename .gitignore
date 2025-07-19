@@ -12,3 +12,7 @@ chats/
 *.log
 
 *.html
+
+test.*
+
+test.py
