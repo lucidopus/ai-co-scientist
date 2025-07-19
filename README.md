@@ -1,1 +1,1 @@
-# ai-co-scientist
+# AI Co-Scientist
