@@ -128,8 +128,7 @@ async def process_scientific_query(
             )
         
         # Process through multi-agent pipeline
-        # response = generate_hypotheses_pipeline(request)
-        response = STATIC_RESPONSE
+        response = generate_hypotheses_pipeline(request)
         
         logger.info(f"Successfully generated {len(response.hypotheses)} hypotheses in {response.total_processing_time:.2f}s")
         
