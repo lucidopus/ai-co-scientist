@@ -2,16 +2,23 @@ from typing import Dict, Any, List
 import json
 
 from agents.base_agent import BaseCoScientistAgent
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import plan_experiments_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class MetaReviewAgent(BaseCoScientistAgent):
-    """Agent responsible for final review and experimental planning"""
+    """Agent responsible for final review and experimental planning using GROQ Llama 3.3 70B"""
     
     def __init__(self):
         super().__init__(
             name="meta_review_agent",
             description="Performs final review and creates comprehensive experimental plans",
-            model="o3-mini"  # Use OpenAI o3-mini for precise final analysis
+            model="llama-3.3-70b-versatile",  # Use GROQ Llama 3.3 70B for comprehensive final analysis
+            tools=[plan_experiments_tool]
         )
     
     def get_system_prompt(self) -> str:

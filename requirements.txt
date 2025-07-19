@@ -7,4 +7,6 @@ python-multipart==0.0.6
 groq==0.12.0
 openai==1.55.0
 requests==2.31.0
-typing-extensions==4.8.0 
+typing-extensions==4.8.0
+google-adk==1.7.0
+google-auth==2.40.3 

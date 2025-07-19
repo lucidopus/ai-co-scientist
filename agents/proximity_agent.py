@@ -3,16 +3,23 @@ import json
 import requests
 
 from agents.base_agent import BaseCoScientistAgent
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import retrieve_knowledge_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class ProximityAgent(BaseCoScientistAgent):
-    """Agent responsible for retrieving related knowledge and grounding hypotheses"""
+    """Agent responsible for retrieving related knowledge and grounding hypotheses using GROQ Gemma2 9B"""
     
     def __init__(self):
         super().__init__(
             name="proximity_agent",
             description="Retrieves related knowledge and grounds hypotheses in existing research",
-            model="gemma2-9b-it"  # Use fast GROQ model for search and retrieval
+            model="gemma2-9b-it",  # Use GROQ Gemma2 9B for fast search and retrieval
+            tools=[retrieve_knowledge_tool]
         )
     
     def get_system_prompt(self) -> str:

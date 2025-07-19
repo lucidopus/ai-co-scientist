@@ -3,16 +3,23 @@ import json
 import uuid
 
 from agents.base_agent import BaseCoScientistAgent
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import evolve_hypothesis_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class EvolutionAgent(BaseCoScientistAgent):
-    """Agent responsible for iteratively refining and evolving hypotheses"""
+    """Agent responsible for iteratively refining and evolving hypotheses using GROQ Qwen3 32B"""
     
     def __init__(self):
         super().__init__(
             name="evolution_agent",
             description="Iteratively refines and evolves scientific hypotheses through mutation and combination",
-            model="llama-3.3-70b-versatile"  # Use GROQ Llama for complex reasoning
+            model="qwen/qwen3-32b",  # Use GROQ Qwen3 32B for creative evolution and complex reasoning
+            tools=[evolve_hypothesis_tool]
         )
     
     def get_system_prompt(self) -> str:

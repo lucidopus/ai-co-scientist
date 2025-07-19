@@ -1,5 +1,7 @@
 import os
 import logging
+import json
+from datetime import datetime
 
 import uvicorn
 from fastapi import FastAPI, Security, Depends, HTTPException as FastAPIHTTPException
@@ -23,6 +25,35 @@ from utils.logging_config import setup_logging
 # Setup logging
 logger = setup_logging()
 logger.info("Starting AI Co-Scientist application")
+
+def save_query_response(query: str, response_data: dict):
+    """Save query and response to JSON file in results/ directory."""
+    try:
+        results_file = "results/query_responses.json"
+        
+        # Load existing data if file exists
+        if os.path.exists(results_file):
+            with open(results_file, 'r') as f:
+                data = json.load(f)
+        else:
+            data = []
+        
+        # Append new entry
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "query": query,
+            "response": response_data
+        }
+        data.append(entry)
+        
+        # Save back to file
+        with open(results_file, 'w') as f:
+            json.dump(data, f, indent=2)
+            
+        logger.info(f"Saved query/response to {results_file}")
+        
+    except Exception as e:
+        logger.error(f"Failed to save query/response: {str(e)}")
 
 app = FastAPI(
     title="AI Co-Scientist",
@@ -131,6 +162,9 @@ async def process_scientific_query(
         response = generate_hypotheses_pipeline(request)
         
         logger.info(f"Successfully generated {len(response.hypotheses)} hypotheses in {response.total_processing_time:.2f}s")
+        
+        # Save query and response to JSON file
+        save_query_response(request.query, response.model_dump())
         
         return response
         

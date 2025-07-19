@@ -13,6 +13,6 @@ chats/
 
 *.html
 
-test.*
+test*
 
-test.py
+/results

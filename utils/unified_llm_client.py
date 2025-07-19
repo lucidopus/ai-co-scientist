@@ -1,28 +1,29 @@
 from typing import Dict, Any, Optional, List
 import logging
-from openai import OpenAI
 
-from utils.groq_client import groq_client
-from utils.helper import ask_gemma
-from utils.config import OPENAI_API_KEY, PRIMARY_MODEL, SECONDARY_MODEL
+# Note: This module is now deprecated in favor of ADK's native LLM handling
+# All agents now use Google ADK's built-in model management
+# Keeping this for backward compatibility during transition
 
 logger = logging.getLogger(__name__)
 
 class UnifiedLLMClient:
-    """Unified client that can use GROQ, OpenAI, and Gemma models strategically"""
+    """
+    DEPRECATED: Unified client that can use GROQ, OpenAI, and Gemma models strategically
+    
+    This class is being phased out in favor of Google ADK's native LLM handling.
+    All new agents should use ADK's Agent class with built-in model support.
+    """
     
     def __init__(self):
-        # Initialize OpenAI client if API key is available
-        self.openai_client = None
-        if OPENAI_API_KEY:
-            self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
+        logger.warning("UnifiedLLMClient is deprecated. Use Google ADK agents instead.")
         
-        # Model capabilities and use cases
+        # Model strategies - now primarily for reference
         self.model_strategies = {
-            "complex_reasoning": "llama-3.3-70b-versatile",  # GROQ Llama for complex analysis
-            "fast_operations": "gemma2-9b-it",              # GROQ Gemma for quick tasks
-            "creative_generation": "gemma3:12b",            # Gemma 3 12B for creative tasks
-            "precise_analysis": "o3-mini",                  # OpenAI o3-mini for precise analysis
+            "complex_reasoning": "gemini-2.5-flash",        # ADK uses Gemini
+            "fast_operations": "gemini-2.5-flash",          # ADK uses Gemini  
+            "creative_generation": "gemini-2.5-flash",      # ADK uses Gemini
+            "precise_analysis": "gemini-2.5-flash",         # ADK uses Gemini
         }
     
     def generate_response(
@@ -35,34 +36,15 @@ class UnifiedLLMClient:
         **kwargs
     ) -> str:
         """
-        Generate response using the best model for the given strategy
+        DEPRECATED: Generate response using the best model for the given strategy
         
-        Args:
-            prompt: The input prompt
-            system_prompt: Optional system prompt
-            model_strategy: Strategy for model selection
-            temperature: Sampling temperature
-            max_tokens: Maximum tokens to generate
-            **kwargs: Additional arguments
-        
-        Returns:
-            Generated response text
+        This method is deprecated. Use Google ADK agents instead.
         """
-        try:
-            model = self.model_strategies.get(model_strategy, "complex_reasoning")
-            
-            if model == "o3-mini" and self.openai_client:
-                return self._call_openai(prompt, system_prompt, temperature, max_tokens, **kwargs)
-            elif model == "gemma3:12b":
-                return self._call_gemma(prompt, system_prompt, **kwargs)
-            else:
-                # Use GROQ models
-                return self._call_groq(prompt, system_prompt, model, temperature, max_tokens, **kwargs)
-                
-        except Exception as e:
-            logger.error(f"Error in unified LLM client: {e}")
-            # Fallback to GROQ primary model
-            return self._call_groq(prompt, system_prompt, PRIMARY_MODEL, temperature, max_tokens, **kwargs)
+        logger.error("UnifiedLLMClient.generate_response is deprecated. Use ADK agents.")
+        raise DeprecationWarning(
+            "UnifiedLLMClient is deprecated. "
+            "Use Google ADK agents with built-in model support instead."
+        )
     
     def _call_openai(
         self,

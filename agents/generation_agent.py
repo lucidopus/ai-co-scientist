@@ -3,16 +3,28 @@ import json
 import uuid
 
 from agents.base_agent import BaseCoScientistAgent
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import generate_hypotheses_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
+
+try:
+    from utils.helper import ask_gemma
+except ImportError:
+    ask_gemma = None
 
 class GenerationAgent(BaseCoScientistAgent):
-    """Agent responsible for generating novel scientific hypotheses"""
+    """Agent responsible for generating novel scientific hypotheses using deployed Gemma 12B"""
     
     def __init__(self):
         super().__init__(
             name="generation_agent",
             description="Generates novel scientific hypotheses based on research queries",
-            model="gemma3:12b"  # Use Gemma 3 12B for creative generation
+            model="gemma3:12b",  # Use deployed Gemma 12B via ask_gemma function
+            tools=[generate_hypotheses_tool]
         )
     
     def get_system_prompt(self) -> str:

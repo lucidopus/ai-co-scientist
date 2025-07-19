@@ -2,17 +2,23 @@ from typing import Dict, Any, List, Tuple
 import json
 
 from agents.base_agent import BaseCoScientistAgent
-from utils.config import SECONDARY_MODEL  # Use faster model for ranking
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import rank_hypotheses_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class RankingAgent(BaseCoScientistAgent):
-    """Agent responsible for ranking and scoring scientific hypotheses"""
+    """Agent responsible for ranking and scoring scientific hypotheses using GROQ Gemma2 9B"""
     
     def __init__(self):
         super().__init__(
             name="ranking_agent",
             description="Ranks and scores scientific hypotheses based on multiple criteria",
-            model=SECONDARY_MODEL  # Use faster model for ranking tasks
+            model="gemma2-9b-it",  # Use GROQ Gemma2 9B for fast ranking operations
+            tools=[rank_hypotheses_tool]
         )
     
     def get_system_prompt(self) -> str:

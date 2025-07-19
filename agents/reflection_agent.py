@@ -2,16 +2,23 @@ from typing import Dict, Any, List
 import json
 
 from agents.base_agent import BaseCoScientistAgent
-from prompts import AgentPrompts, PromptTemplates
+from utils.adk_tools import critique_hypothesis_tool
+
+# Import prompts with fallback for testing
+try:
+    from prompts import AgentPrompts, PromptTemplates
+except ImportError:
+    from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class ReflectionAgent(BaseCoScientistAgent):
-    """Agent responsible for critiquing and evaluating scientific hypotheses"""
+    """Agent responsible for critiquing and evaluating scientific hypotheses using GROQ Llama 3.3 70B"""
     
     def __init__(self):
         super().__init__(
             name="reflection_agent",
             description="Critiques and evaluates scientific hypotheses for validity, novelty, and feasibility",
-            model="o3-mini"  # Use OpenAI o3-mini for precise analysis
+            model="llama-3.3-70b-versatile",  # Use GROQ Llama 3.3 70B for precise reasoning
+            tools=[critique_hypothesis_tool]
         )
     
     def get_system_prompt(self) -> str:

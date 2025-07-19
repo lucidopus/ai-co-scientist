@@ -16,6 +16,9 @@ def ask_gemma(prompt: str, streaming: bool = False) -> str | Generator[str, None
         If streaming=False: The complete generated text response
         If streaming=True: A generator that yields text chunks as they're generated
     """
+    if GEMMA_SERVICE_URL is None:
+        raise ValueError("GEMMA_SERVICE_URL not configured")
+    
     api_endpoint = f"{GEMMA_SERVICE_URL.rstrip('/')}/api/generate"
     
     payload = {
