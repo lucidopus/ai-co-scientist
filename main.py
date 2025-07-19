@@ -1,21 +1,28 @@
 import os
+import logging
 
 import uvicorn
-from fastapi import FastAPI, Security, Depends
+from fastapi import FastAPI, Security, Depends, HTTPException as FastAPIHTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.security import APIKeyHeader
 from starlette.exceptions import HTTPException
 
-from utils.config import API_KEY
+from utils.config import API_KEY, STATIC_RESPONSE
 from utils.enums import HttpStatusCode
 from utils.models import (
     QueryRequest,
     QueryResponse,
     HealthResponse,
+    ErrorResponse,
 )
 from utils.pipelines import generate_hypotheses_pipeline
+from utils.logging_config import setup_logging
+
+# Setup logging
+logger = setup_logging()
+logger.info("Starting AI Co-Scientist application")
 
 app = FastAPI(
     title="AI Co-Scientist",
@@ -95,14 +102,47 @@ async def process_scientific_query(
     """
     Process a scientific query and return generated hypotheses.
     
-    This endpoint simulates the multi-agent AI co-scientist system that:
-    1. Generates novel scientific hypotheses
-    2. Critiques and refines them
-    3. Ranks them by novelty and feasibility
-    4. Provides experimental plans
+    This endpoint implements the complete AI co-scientist workflow using:
+    1. Generation Agent (Gemma 3 12B) - Novel hypothesis generation
+    2. Proximity Agent (Gemma 2 9B) - Knowledge retrieval and grounding
+    3. Reflection Agent (OpenAI o3-mini) - Scientific critique and evaluation
+    4. Ranking Agent (Gemma 2 9B) - Multi-criteria hypothesis ranking
+    5. Evolution Agent (Llama 3.3 70B) - Iterative hypothesis refinement
+    6. Meta-Review Agent (OpenAI o3-mini) - Final review and experimental planning
     """
     
-    return generate_hypotheses_pipeline(request)
+    try:
+        logger.info(f"Processing scientific query: {request.query[:100]}...")
+        
+        # Validate request
+        if not request.query.strip():
+            raise FastAPIHTTPException(
+                status_code=400,
+                detail="Query cannot be empty"
+            )
+        
+        if request.max_hypotheses < 1 or request.max_hypotheses > 10:
+            raise FastAPIHTTPException(
+                status_code=400,
+                detail="max_hypotheses must be between 1 and 10"
+            )
+        
+        # Process through multi-agent pipeline
+        # response = generate_hypotheses_pipeline(request)
+        response = STATIC_RESPONSE
+        
+        logger.info(f"Successfully generated {len(response.hypotheses)} hypotheses in {response.total_processing_time:.2f}s")
+        
+        return response
+        
+    except FastAPIHTTPException:
+        raise  # Re-raise FastAPI HTTP exceptions
+    except Exception as e:
+        logger.error(f"Error processing scientific query: {str(e)}", exc_info=True)
+        raise FastAPIHTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=4)

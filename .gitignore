@@ -4,3 +4,11 @@
 .env
 
 __pycache__/
+
+chats/
+
+.claude/
+
+*.log
+
+*.html
