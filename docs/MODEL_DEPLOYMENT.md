@@ -1,6 +1,6 @@
 # Step-by-Step Guide: Deploying Gemma 12b on Google Cloud Run L4 GPU
 
-## Quick Overview
+## Quick Overview (Phase 1)
 
 This guide provides exact commands and expected outputs for deploying Google's Gemma 12b (12-billion parameter) language model on Google Cloud Run using NVIDIA L4 GPU. Total deployment time: **~10-15 minutes**.
 
