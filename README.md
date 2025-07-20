@@ -1,21 +1,53 @@
-# AI Co-Scientist
+# 🧬 AI Co-Scientist
 
-A multi-agent AI system for generating scientific hypotheses and research plans using advanced language models.
+A sophisticated multi-agent AI system that generates novel scientific hypotheses through collaborative agent-based reasoning. Built for scientific research acceleration and hypothesis discovery.
 
-## 🚀 Features
+## 🎯 Overview
 
-### Core Functionality
-- **Multi-Agent Hypothesis Generation**: Uses 6 specialized AI agents to generate, validate, and refine scientific hypotheses
-- **Knowledge Grounding**: Systematic literature review and knowledge validation
-- **Scientific Critique**: Rigorous evaluation of hypothesis validity and feasibility
-- **Ranking & Evolution**: Multi-criteria ranking and iterative hypothesis refinement
-- **Experimental Planning**: Detailed research plans and implementation strategies
+AI Co-Scientist is an advanced research tool that employs multiple specialized AI agents to analyze scientific queries and generate well-reasoned, novel hypotheses. The system leverages state-of-the-art language models including **Gemma 3 12B** (hosted on Google Cloud's L4 GPU) for critical query generation and hypothesis creation, ensuring high-quality scientific outputs.
 
-### Auto Query Generation
-- **`/sample` Endpoint**: Automatically generate diverse scientific research queries
-- **Domain Diversity**: Queries span multiple scientific domains (biomedical, materials science, environmental, AI/ML, etc.)
-- **Quality Assurance**: Generated queries are scientifically sound and testable
-- **Metadata Rich**: Includes complexity levels, estimated hypotheses, and research approaches
+### 🏗️ System Architecture
+
+The system implements a sophisticated 6-stage multi-agent pipeline:
+
+1. **🔬 Generation Agent** - Creates novel scientific hypotheses using **Gemma 3 12B**
+2. **📚 Proximity Agent** - Retrieves and analyzes relevant knowledge using Llama 4 Scout 17B
+3. **🔍 Reflection Agent** - Provides scientific critique and evaluation using OpenAI o3-mini
+4. **📊 Ranking Agent** - Ranks hypotheses by multiple criteria using Qwen 3 32B
+5. **🧬 Evolution Agent** - Refines and evolves top hypotheses using Llama 3.3 70B
+6. **📋 Meta-Review Agent** - Conducts final review and experimental planning using OpenAI o3-mini
+
+## 🚀 Key Features
+
+- **Multi-Model Architecture**: Leverages the strengths of different LLMs for specialized tasks
+- **Scientific Rigor**: Implements critique, ranking, and evolution cycles for hypothesis refinement
+- **Knowledge Integration**: Incorporates external knowledge retrieval and literature analysis
+- **Experimental Planning**: Generates detailed experimental approaches for each hypothesis
+- **Scalable API**: RESTful FastAPI backend with comprehensive documentation
+- **Real-time Processing**: Advanced terminal UI with progress tracking and colored output
+- **Data Persistence**: MongoDB integration with JSON fallback for query/response storage
+- **Memory System**: Enhanced memory service for session and hypothesis tracking
+
+## 🔧 Gemma 3 12B Integration
+
+**Gemma 3 12B is deployed on Google Cloud's L4 GPU** and serves two critical functions in the pipeline:
+
+### 1. Sample Query Generation (`/sample` endpoint)
+- Generates diverse, high-quality scientific research queries
+- Used for testing and demonstrating the system capabilities
+- Accessed via `utils/helper.py::generate_sample_query()`
+
+### 2. Hypothesis Generation (Core Pipeline)
+- Primary model for novel scientific hypothesis creation
+- Deployed on NVIDIA L4 GPU (24GB VRAM, 7424 CUDA cores)
+- Configured for optimal inference with 8 vCPUs and 32GB RAM
+- Accessed via `agents/generation_agent.py` using the `ask_gemma()` function
+
+**Deployment Details:**
+- **Hardware**: Google Cloud Run with NVIDIA L4 GPU
+- **Service URL**: Configured via `GEMMA_SERVICE_URL` environment variable
+- **Performance**: ~50-100 tokens/second with 2-10 second response times
+- **Cost**: ~$0.62/hour when active (scales to zero when idle)
 
 ## 🛠️ API Endpoints
 
@@ -64,98 +96,137 @@ GET /health
 
 ## 🏗️ Architecture
 
-### AI Agents
-1. **Generation Agent** (Gemma 3 12B): Novel hypothesis generation
-2. **Proximity Agent** (Gemma 2 9B): Knowledge retrieval and grounding
-3. **Reflection Agent** (OpenAI o3-mini): Scientific critique and evaluation
-4. **Ranking Agent** (Gemma 2 9B): Multi-criteria hypothesis ranking
-5. **Evolution Agent** (Llama 3.3 70B): Iterative hypothesis refinement
-6. **Meta-Review Agent** (OpenAI o3-mini): Final review and experimental planning
+### Multi-Agent System
+The system uses specialized AI models for different phases:
 
-### Auto Query Generation
-- **Model**: Gemma 3 12B for query generation
-- **Prompt Engineering**: Specialized prompts for diverse scientific domains
-- **Quality Control**: JSON validation and metadata enrichment
-- **Error Handling**: Robust error handling for malformed responses
+1. **Generation Agent** - **Gemma 3 12B** (deployed on Google Cloud L4 GPU): Novel hypothesis generation
+2. **Proximity Agent** - Llama 4 Scout 17B: Knowledge retrieval and grounding
+3. **Reflection Agent** - OpenAI o3-mini: Scientific critique and evaluation
+4. **Ranking Agent** - Qwen 3 32B: Multi-criteria hypothesis ranking
+5. **Evolution Agent** - Llama 3.3 70B: Iterative hypothesis refinement
+6. **Meta-Review Agent** - OpenAI o3-mini: Final review and experimental planning
+
+### Gemma 3 12B Usage Areas
+- **Query Generation**: Powers the `/sample` endpoint for generating scientific research queries
+- **Hypothesis Creation**: Core engine for generating novel scientific hypotheses in the main pipeline
+- **Cloud Deployment**: Hosted on Google Cloud Run with NVIDIA L4 GPU for optimal performance
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
-- MongoDB (optional, for response storage)
-- API keys for required services
+- Google Cloud account (for Gemma 3 12B deployment)
+- API keys for required services:
+  - GROQ API (for Llama models)
+  - OpenAI API (for o3-mini)
+  - Tavily API (for knowledge retrieval)
+- MongoDB instance (optional, JSON fallback available)
 
 ### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-repo/ai-co-scientist.git
+   cd ai-co-scientist
+   ```
+
+2. **Create virtual environment:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables:**
+   Create a `.env` file in the root directory:
+   ```env
+   API_KEY=your_secret_api_key
+   GEMMA_SERVICE_URL=https://your-gemma-service.run.app
+   GROQ_API_KEY=your_groq_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   TAVILY_API_KEY=your_tavily_api_key
+   MONGODB_URI=mongodb://localhost:27017
+   DATABASE=ai_co_scientist
+   REQUESTS_COLLECTION=requests
+   ```
+
+5. **Deploy Gemma 3 12B (Required):**
+   Follow the detailed guide in `docs/MODEL_DEPLOYMENT.md` to deploy Gemma 3 12B on Google Cloud Run with L4 GPU.
+
+### Start the API server:
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd ai-co-scientist
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your API keys
-```
-
-### Environment Variables
-```bash
-# Required
-API_KEY=your-api-key
-GEMMA_SERVICE_URL=http://localhost:11434
-
-# Optional
-GROQ_API_KEY=your-groq-key
-OPENAI_API_KEY=your-openai-key
-TAVILY_API_KEY=your-tavily-key
-MONGODB_URI=your-mongodb-uri
-```
-
-### Running the Application
-```bash
-# Start the server
 python main.py
-
-# Or with uvicorn
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Testing the Auto Query Generation
+The server will start on `http://localhost:8000`
+
+### API Endpoints:
+
+#### Generate Hypotheses
 ```bash
-# Run the test script
-python test_sample_endpoint.py
-
-# Or test manually with curl
-curl -X GET "http://localhost:8000/sample" \
-  -H "X-API-Key: your-api-key"
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your_api_key" \
+  -d '{
+    "query": "How might quantum entanglement be leveraged for biological information processing?",
+    "max_hypotheses": 3
+  }'
 ```
 
-## 📊 Example Usage
+#### Generate Sample Query
+```bash
+curl -X GET "http://localhost:8000/sample" \
+  -H "X-API-Key: your_api_key"
+```
 
-### Generate Sample Queries
+#### Health Check
+```bash
+curl -X GET "http://localhost:8000/health"
+```
+
+### Interactive Documentation:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+## 🔬 Example Usage
+
+### Input Query:
+```json
+{
+  "query": "What novel approaches could enhance CRISPR gene editing precision?",
+  "max_hypotheses": 3
+}
+```
+
+### System Response:
+The system will process through all 6 agents and return:
+- **3 novel hypotheses** with detailed descriptions and reasoning
+- **Scientific critique** and validity assessments
+- **Feasibility scores** and confidence ratings
+- **Experimental plans** for each hypothesis
+- **Literature recommendations** and collaboration suggestions
+- **Processing metadata** including execution times and model information
+
+### Python Client Example:
 ```python
 import requests
 
-# Generate a sample scientific query
+# Generate a sample scientific query using Gemma 3 12B
 response = requests.get(
     "http://localhost:8000/sample",
     headers={"X-API-Key": "your-api-key"}
 )
 
-if response.status_code == 200:
-    query_data = response.json()
-    print(f"Generated Query: {query_data['generated_query']}")
-    print(f"Domain: {query_data['domain']}")
-    print(f"Complexity: {query_data['complexity_level']}")
-```
+generated_query = response.json()['generated_query']
 
-### Use Generated Query for Hypothesis Generation
-```python
 # Use the generated query to create hypotheses
 query_request = {
-    "query": query_data['generated_query'],
-    "max_hypotheses": 5
+    "query": generated_query,
+    "max_hypotheses": 3
 }
 
 hypothesis_response = requests.post(
@@ -163,88 +234,115 @@ hypothesis_response = requests.post(
     json=query_request,
     headers={"X-API-Key": "your-api-key"}
 )
+
+results = hypothesis_response.json()
+print(f"Generated {len(results['hypotheses'])} hypotheses in {results['total_processing_time']:.2f}s")
+```
+
+## 🏗️ Project Structure
+
+```
+ai-co-scientist/
+├── agents/                    # Multi-agent system components
+│   ├── generation_agent.py   # Hypothesis generation (Gemma 3 12B)
+│   ├── reflection_agent.py   # Scientific critique (o3-mini)
+│   ├── ranking_agent.py      # Hypothesis ranking (Qwen 3 32B)
+│   ├── evolution_agent.py    # Hypothesis evolution (Llama 3.3 70B)
+│   ├── proximity_agent.py    # Knowledge retrieval (Llama 4 Scout)
+│   └── meta_review_agent.py  # Final review (o3-mini)
+├── utils/                     # Core utilities and services
+│   ├── pipelines.py          # Main processing pipeline
+│   ├── helper.py             # Gemma 3 12B client functions
+│   ├── config.py             # Environment configuration
+│   ├── models.py             # Pydantic data models
+│   └── memory_service.py     # Enhanced memory management
+├── docs/                      # Documentation
+│   ├── MODEL_DEPLOYMENT.md   # Gemma 3 12B deployment guide
+│   └── *.md                  # Additional documentation
+├── main.py                   # FastAPI application entry point
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
 ```
 
 ## 🧪 Testing
 
-### Run Tests
+Run the test suite:
 ```bash
-# Test the sample endpoint
-python test_sample_endpoint.py
+# Unit tests
+python -m pytest tests/
 
-# Test the main hypothesis generation
+# Integration tests
+python test_integration.py
+
+# Agent-specific tests
 python test_adk_agents.py
 ```
-
-### Test Coverage
-- ✅ API endpoint functionality
-- ✅ Authentication and authorization
-- ✅ Response format validation
-- ✅ Error handling
-- ✅ Domain diversity testing
-- ✅ Performance testing
-
-## 📈 Performance Metrics
-
-### Auto Query Generation
-- **Response Time**: < 30 seconds
-- **Success Rate**: > 95% valid JSON responses
-- **Domain Diversity**: 8+ scientific domains
-- **Query Quality**: Clear, specific, and scientifically sound
-
-### Hypothesis Generation
-- **Processing Time**: 2-5 minutes per query
-- **Hypothesis Quality**: Multi-agent validation
-- **Scientific Rigor**: Literature grounding and critique
 
 ## 🔧 Configuration
 
 ### Model Configuration
-```python
-# utils/config.py
-PRIMARY_MODEL = "llama-3.3-70b-versatile"  # For complex reasoning
-SECONDARY_MODEL = "gemma2-9b-it"  # For faster operations
-```
+The system uses different models optimized for specific tasks:
 
-### Prompt Customization
-Edit `prompts.py` to customize:
-- Query generation guidelines
-- Domain examples
-- Output format requirements
-- Quality criteria
+- **Generation**: Gemma 3 12B (deployed on L4 GPU)
+- **Critique**: OpenAI o3-mini
+- **Ranking**: Qwen 3 32B via GROQ
+- **Evolution**: Llama 3.3 70B via GROQ
+- **Knowledge**: Llama 4 Scout 17B via GROQ
 
-## 🚨 Error Handling
+### Performance Settings
+- **Concurrency**: 4 simultaneous requests per instance
+- **Memory**: 32GB RAM allocation
+- **GPU**: Single NVIDIA L4 (24GB VRAM)
+- **Timeout**: 600 seconds for complex processing
 
-### Common Issues
-1. **GEMMA_SERVICE_URL not configured**: Ensure Gemma service is running
-2. **Invalid API Key**: Check your API key configuration
-3. **Malformed JSON Response**: The system handles parsing errors gracefully
-4. **Timeout Issues**: Increase timeout for complex queries
+## 🔍 Monitoring & Debugging
 
-### Debugging
-```bash
-# Check logs
-tail -f ai_co_scientist_*.log
+### Real-time Terminal Output
+The system provides comprehensive colored terminal output including:
+- 🔄 Progress bars for multi-step processing
+- 🤖 Agent activity logs with timing information
+- 📊 Hypothesis summaries with scoring metrics
+- ✅ Success/error indicators with detailed messages
 
-# Test individual components
-python test_prompts.py
-python test_mongodb.py
-```
+### Logging
+Detailed logging is available in:
+- `ai_co_scientist_YYYYMMDD.log` - Application logs
+- Google Cloud Run logs for Gemma 3 12B service
+- MongoDB query logs (if enabled)
 
-## 📚 Documentation
+## 💾 Data Storage
 
-- [Auto Query Generation Guide](docs/AUTO_QUERY_GENERATION.md)
-- [Implementation Summary](docs/IMPLEMENTATION_SUMMARY.md)
-- [Model Deployment Guide](docs/MODEL_DEPLOYMENT.md)
-- [Memory System Guide](docs/MEMORY_SYSTEM_GUIDE.md)
+### Query Responses
+All query/response pairs are stored in:
+- **Primary**: MongoDB collection (`requests`)
+- **Fallback**: JSON file (`results/query_responses.json`)
+
+### Memory System
+Enhanced memory service stores:
+- Research sessions with metadata
+- Individual hypotheses with evaluations
+- Processing steps and agent outputs
+- Confidence scores and quality metrics
+
+## 💰 Cost Optimization
+
+### Gemma 3 12B Hosting Costs
+- **Active usage**: ~$0.62/hour (L4 GPU + compute)
+- **Idle time**: $0/hour (scales to zero)
+- **Monthly estimates**: $31-124 depending on usage
+
+### Model API Costs
+- **GROQ**: $0.59 per 1M input tokens
+- **OpenAI o3-mini**: $0.60 per 1M input tokens
+- **Tavily Search**: $5 per 1K searches
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
@@ -252,6 +350,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with FastAPI and modern Python practices
-- Powered by multiple AI models (Gemma, Llama, OpenAI)
-- Inspired by collaborative scientific research methodologies
+- **Google Cloud** for Gemma 3 12B model and L4 GPU infrastructure
+- **GROQ** for high-performance LLM inference
+- **OpenAI** for advanced reasoning capabilities
+- **Tavily** for knowledge retrieval services
+- **MongoDB** for data persistence solutions
+
+## 📞 Support
+
+For questions, issues, or contributions:
+- 📧 Email: [Support Contact]
+- 🐛 Issues: [GitHub Issues](https://github.com/your-/ai-co-scientist/issues)
+- 📖 Docs: See the `docs/` directory for detailed guides
+
+---
