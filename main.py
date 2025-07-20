@@ -21,14 +21,16 @@ from utils.models import (
 )
 from utils.pipelines import generate_hypotheses_pipeline
 from utils.logging_config import setup_logging
+from utils.database import requests_collection
 
 # Setup logging
 logger = setup_logging()
 logger.info("Starting AI Co-Scientist application")
 
 def save_query_response(query: str, response_data: dict):
-    """Save query and response to JSON file in results/ directory."""
+    """Save query and response to JSON file and MongoDB collection."""
     try:
+        # Save to JSON file (existing functionality)
         results_file = "results/query_responses.json"
         
         # Load existing data if file exists
@@ -51,6 +53,19 @@ def save_query_response(query: str, response_data: dict):
             json.dump(data, f, indent=2)
             
         logger.info(f"Saved query/response to {results_file}")
+        
+        # Save to MongoDB
+        try:
+            mongo_entry = {
+                "timestamp": datetime.now(),
+                "query": query,
+                "response": response_data,
+                "created_at": datetime.now().isoformat()
+            }
+            result = requests_collection.insert_one(mongo_entry)
+            logger.info(f"Saved query/response to MongoDB with ID: {result.inserted_id}")
+        except Exception as mongo_error:
+            logger.error(f"Failed to save to MongoDB: {str(mongo_error)}")
         
     except Exception as e:
         logger.error(f"Failed to save query/response: {str(e)}")
