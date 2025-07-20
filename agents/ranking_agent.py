@@ -17,7 +17,7 @@ class RankingAgent(BaseCoScientistAgent):
         super().__init__(
             name="ranking_agent",
             description="Ranks and scores scientific hypotheses based on multiple criteria",
-            model="gemma2-9b-it",  # Use GROQ Gemma2 9B for fast ranking operations
+            model="qwen/qwen3-32b",  # Use GROQ Gemma2 9B for fast ranking operations
             tools=[rank_hypotheses_tool]
         )
     

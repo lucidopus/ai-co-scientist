@@ -13,13 +13,13 @@ except ImportError:
     from test_prompts import MockAgentPrompts as AgentPrompts, MockPromptTemplates as PromptTemplates
 
 class ProximityAgent(BaseCoScientistAgent):
-    """Agent responsible for retrieving related knowledge and grounding hypotheses using GROQ Gemma2 9B"""
+    """Agent responsible for retrieving related knowledge and grounding hypotheses using GROQ Llama scout"""
     
     def __init__(self, search_service=None):
         super().__init__(
             name="proximity_agent",
             description="Retrieves related knowledge and grounds hypotheses in existing research",
-            model="gemma2-9b-it",  # Use GROQ Gemma2 9B for fast search and retrieval
+            model="meta-llama/llama-4-scout-17b-16e-instruct",  # Use GROQ Llama Scout for fast search and retrieval
             tools=[retrieve_knowledge_tool]
         )
         # Store search service in a way that's compatible with ADK Agent
