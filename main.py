@@ -23,6 +23,14 @@ from utils.pipelines import generate_hypotheses_pipeline
 from utils.logging_config import setup_logging
 from utils.database import requests_collection
 
+
+class DateTimeEncoder(json.JSONEncoder):
+    """Custom JSON encoder to handle datetime objects."""
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
 # Setup logging
 logger = setup_logging()
 logger.info("Starting AI Co-Scientist application")
@@ -33,12 +41,16 @@ def save_query_response(query: str, response_data: dict):
         # Save to JSON file (existing functionality)
         results_file = "results/query_responses.json"
         
-        # Load existing data if file exists
-        if os.path.exists(results_file):
-            with open(results_file, 'r') as f:
-                data = json.load(f)
-        else:
-            data = []
+        # Load existing data if file exists and is not empty
+        data = []
+        if os.path.exists(results_file) and os.path.getsize(results_file) > 0:
+            try:
+                with open(results_file, 'r') as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                # If file is corrupted or empty, start with empty list
+                logger.warning(f"Corrupted or empty JSON file {results_file}, starting fresh")
+                data = []
         
         # Append new entry
         entry = {
@@ -50,7 +62,7 @@ def save_query_response(query: str, response_data: dict):
         
         # Save back to file
         with open(results_file, 'w') as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f, indent=2, cls=DateTimeEncoder)
             
         logger.info(f"Saved query/response to {results_file}")
         
