@@ -1,5 +1,7 @@
 # 🧬 AI Co-Scientist
 
+DEMO: https://youtu.be/-SYB2mfPJSo
+
 A sophisticated multi-agent AI system that generates novel scientific hypotheses through collaborative agent-based reasoning. Built for scientific research acceleration and hypothesis discovery.
 
 ## 🎯 Overview
