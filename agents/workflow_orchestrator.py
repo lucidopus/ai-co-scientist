@@ -17,11 +17,15 @@ from utils.models import (
     ProcessingStep,
     AgentOutput,
 )
+from utils.memory_service import enhanced_memory_service
 
 class AICoScientistWorkflow:
     """ADK-based workflow orchestrator for the AI Co-Scientist system"""
     
-    def __init__(self):
+    def __init__(self, memory_service=None):
+        # Initialize enhanced memory service
+        self.memory_service = memory_service or enhanced_memory_service
+        
         # Initialize all agents
         self.generation_agent = GenerationAgent()
         self.reflection_agent = ReflectionAgent()
@@ -48,10 +52,31 @@ class AICoScientistWorkflow:
         query_id = str(uuid.uuid4())
         processing_steps = []
         
+        # Create research session in memory
+        session_data = {
+            "session_id": query_id,
+            "research_query": request.query,
+            "status": "active",
+            "created_at": datetime.now(),
+            "hypotheses": [],
+            "processing_steps": [],
+            "current_round": 1,
+            "max_rounds": 1,
+            "total_processing_time": 0.0,
+            "quality_score": 0.0
+        }
+        
         # Step 1: Hypothesis Generation
-        generation_step = self._run_generation_step(request.query, request.max_hypotheses)
+        generation_step = self._run_generation_step(request.query, request.max_hypotheses, query_id)
         processing_steps.append(generation_step)
         hypotheses_data = generation_step.agent_outputs[0].metadata.get("hypotheses", [])
+        
+        # Store hypotheses in enhanced memory
+        for hypothesis in hypotheses_data:
+            hypothesis["research_query"] = request.query
+            hypothesis["source_session"] = query_id
+            stored_id = self.memory_service.store_hypothesis(hypothesis)
+            hypothesis["stored_id"] = stored_id
         
         # Step 2: Knowledge Retrieval (Proximity Agent)
         if self.enable_knowledge_retrieval:
@@ -65,6 +90,25 @@ class AICoScientistWorkflow:
         reflection_step = self._run_reflection_step(hypotheses_data)
         processing_steps.append(reflection_step)
         critiques_data = reflection_step.agent_outputs[0].metadata.get("critiques", [])
+        
+        # Store evaluations in memory
+        for critique in critiques_data:
+            hypothesis_id = critique.get("hypothesis_id")
+            if hypothesis_id:
+                evaluation_data = {
+                    "validity_score": critique.get("validity_score", 0.0),
+                    "novelty_score": critique.get("novelty_score", 0.0),
+                    "feasibility_score": critique.get("feasibility_score", 0.0),
+                    "impact_score": critique.get("impact_score", 0.0),
+                    "final_score": critique.get("final_score", 0.0),
+                    "feedback": critique.get("feedback", {}),
+                    "detailed_analysis": critique.get("detailed_analysis", ""),
+                    "recommendations": critique.get("recommendations", []),
+                    "model_used": "reflection_agent",
+                    "processing_time": reflection_step.duration_seconds,
+                    "confidence": critique.get("confidence", 0.0)
+                }
+                self.memory_service.store_evaluation(hypothesis_id, evaluation_data, "reflection_agent")
         
         # Step 4: Hypothesis Ranking
         ranking_step = self._run_ranking_step(hypotheses_data, critiques_data)
@@ -95,6 +139,18 @@ class AICoScientistWorkflow:
         
         total_time = time.time() - start_time
         
+        # Update session data with final results
+        session_data.update({
+            "status": "completed",
+            "hypotheses": [h.dict() if hasattr(h, 'dict') else h for h in final_hypothesis_objects],
+            "processing_steps": [step.dict() if hasattr(step, 'dict') else step for step in processing_steps],
+            "total_processing_time": total_time,
+            "quality_score": sum(h.confidence_score for h in final_hypothesis_objects) / len(final_hypothesis_objects) if final_hypothesis_objects else 0.0
+        })
+        
+        # Store final session in memory
+        self.memory_service.store_research_session(session_data)
+        
         # Generate summary and recommendations
         summary = self._generate_summary(request.query, final_hypothesis_objects, final_reviews)
         recommendations = self._generate_recommendations(final_hypothesis_objects, final_reviews)
@@ -109,7 +165,7 @@ class AICoScientistWorkflow:
             recommendations=recommendations
         )
     
-    def _run_generation_step(self, query: str, max_hypotheses: int) -> ProcessingStep:
+    def _run_generation_step(self, query: str, max_hypotheses: int, session_id: str = None) -> ProcessingStep:
         """Run hypothesis generation step"""
         start_time = time.time()
         

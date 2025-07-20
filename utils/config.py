@@ -15,6 +15,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # OpenAI Configuration (backup)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+# Tavily Search Configuration
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+
 # Model Configuration
 PRIMARY_MODEL = "llama-3.3-70b-versatile"  # For complex reasoning
 SECONDARY_MODEL = "gemma2-9b-it"  # For faster operations

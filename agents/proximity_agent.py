@@ -4,6 +4,7 @@ import requests
 
 from agents.base_agent import BaseCoScientistAgent
 from utils.adk_tools import retrieve_knowledge_tool
+from utils.search_service import TavilySearchService
 
 # Import prompts with fallback for testing
 try:
@@ -14,13 +15,29 @@ except ImportError:
 class ProximityAgent(BaseCoScientistAgent):
     """Agent responsible for retrieving related knowledge and grounding hypotheses using GROQ Gemma2 9B"""
     
-    def __init__(self):
+    def __init__(self, search_service=None):
         super().__init__(
             name="proximity_agent",
             description="Retrieves related knowledge and grounds hypotheses in existing research",
             model="gemma2-9b-it",  # Use GROQ Gemma2 9B for fast search and retrieval
             tools=[retrieve_knowledge_tool]
         )
+        # Store search service in a way that's compatible with ADK Agent
+        self._search_service = search_service or self._initialize_search_service()
+    
+    @property
+    def search_service(self):
+        """Get the search service"""
+        return self._search_service
+    
+    def _initialize_search_service(self):
+        """Initialize Tavily search service with error handling"""
+        try:
+            return TavilySearchService()
+        except ValueError as e:
+            # If Tavily API key is not set, return None and use fallback
+            print(f"Warning: {e}. Using fallback search implementation.")
+            return None
     
     def get_system_prompt(self) -> str:
         return AgentPrompts.PROXIMITY_AGENT
@@ -116,6 +133,12 @@ class ProximityAgent(BaseCoScientistAgent):
                     "search_queries": [title[:50], f"research methodology {title[:30]}"],
                     "agent_metadata": result["metadata"]
                 }
+                
+                # Perform web search if requested and search queries available
+                if perform_web_search and fallback_analysis["search_queries"]:
+                    search_results = self._perform_web_search(fallback_analysis["search_queries"][:3])
+                    fallback_analysis["web_search_results"] = search_results
+                
                 fallback_analyses.append(fallback_analysis)
             
             return fallback_analyses
@@ -163,18 +186,22 @@ class ProximityAgent(BaseCoScientistAgent):
         return found_concepts[:5]  # Return top 5 concepts
     
     def _perform_web_search(self, queries: List[str]) -> List[Dict[str, str]]:
-        """Perform web search for queries (placeholder implementation)"""
-        # This is a placeholder - in production, integrate with search APIs
-        search_results = []
-        
-        for query in queries:
-            # Simulated search result
-            search_results.append({
-                "query": query,
-                "title": f"Research on {query}",
-                "summary": f"Recent developments in {query} show promising advances in the field.",
-                "source": "academic-search-engine.com",
-                "relevance": "high"
-            })
-        
-        return search_results
+        """Perform web search for queries using Tavily or fallback implementation"""
+        if self.search_service:
+            # Use Tavily search service
+            return self.search_service.search_for_hypothesis_queries(queries)
+        else:
+            # Fallback to placeholder implementation
+            search_results = []
+            
+            for query in queries:
+                # Simulated search result
+                search_results.append({
+                    "query": query,
+                    "title": f"Research on {query}",
+                    "summary": f"Recent developments in {query} show promising advances in the field.",
+                    "source": "academic-search-engine.com",
+                    "relevance": "high"
+                })
+            
+            return search_results
