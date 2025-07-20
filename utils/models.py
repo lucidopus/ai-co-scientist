@@ -51,10 +51,17 @@ class QueryResponse(BaseModel):
     recommendations: List[str] = Field(description="Research recommendations")
 
 
+class SampleQueryResponse(BaseModel):
+    generated_query: str = Field(description="The automatically generated scientific query")
+
 class ErrorResponse(BaseModel):
     error: str = Field(description="Error message")
     error_code: str = Field(description="Error code")
     details: str = Field(description="Additional error details")
+
+
+class SampleQueryResponse(BaseModel):
+    generated_query: str = Field(description="The automatically generated scientific query")
 
 
 class HealthResponse(BaseModel):

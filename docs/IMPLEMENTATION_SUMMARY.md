@@ -78,7 +78,29 @@ Query → Generation → Knowledge Retrieval → Critique → Ranking → Evolut
 - Concept frequency analysis
 - Related hypothesis retrieval
 
+### 6. Auto Query Generation
+- Automated scientific query generation using Gemma 3 12B
+- Diverse domain coverage (biomedical, materials, environmental, AI/ML, energy)
+- High-quality, testable research questions
+- Simple JSON response format for easy integration
+
 ## API Endpoints
+
+### GET `/sample`
+Generates sample scientific queries using the deployed Gemma 3 12B model for testing the hypothesis generation system.
+
+**Request:**
+```bash
+GET /sample
+Headers: X-API-Key: your-api-key
+```
+
+**Response:**
+```json
+{
+  "generated_query": "How do variations in soil microbial community composition influence the resilience of drought-stressed agricultural ecosystems under predicted climate change scenarios? Focus on field-based experiments using standardized soil sampling and metagenomic sequencing techniques across a latitudinal gradient."
+}
+```
 
 ### POST `/query`
 Processes scientific queries through the complete multi-agent pipeline.
@@ -159,6 +181,19 @@ python main.py
 2. "What novel approaches could accelerate the development of sustainable energy storage solutions?"
 3. "How might AI be used to advance climate change research and mitigation strategies?"
 
+### Auto-Generated Query Examples
+The `/sample` endpoint generates diverse queries across scientific domains:
+
+**Biomedical**: "How can we develop targeted therapies for rare genetic disorders using CRISPR-based approaches? Focus on methods that can be tested in vitro and validated in animal models."
+
+**Materials Science**: "What novel composite materials could improve energy storage efficiency in electric vehicles? Focus on low-cost, scalable solutions."
+
+**Environmental**: "How can we design bio-inspired filtration systems for microplastic removal from water sources? Focus on systems that can be deployed in municipal water treatment facilities."
+
+**AI/ML**: "Can we develop interpretable machine learning models for predicting protein folding intermediates? Focus on models that can be validated against experimental data."
+
+**Energy**: "What innovative approaches could enable scalable fusion energy production using alternative confinement methods? Focus on approaches that can be tested in laboratory settings."
+
 ## Workflow Details
 
 ### Processing Pipeline
@@ -193,6 +228,9 @@ python main.py
 3. **Collaborative Features**: Multi-user research collaboration
 4. **Domain Specialization**: Specialized agents for specific scientific fields
 5. **Continuous Learning**: Hypothesis outcome tracking and model improvement
+6. **Enhanced Query Generation**: Query categories, complexity levels, and custom constraints
+7. **Query History**: Store and retrieve previously generated queries
+8. **Quality Feedback**: Allow users to rate generated queries
 
 ## Conclusion
 

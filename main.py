@@ -16,12 +16,14 @@ from utils.enums import HttpStatusCode
 from utils.models import (
     QueryRequest,
     QueryResponse,
+    SampleQueryResponse,
     HealthResponse,
     ErrorResponse,
 )
 from utils.pipelines import generate_hypotheses_pipeline
 from utils.logging_config import setup_logging
 from utils.database import requests_collection
+from utils.helper import generate_sample_query
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -203,6 +205,48 @@ async def process_scientific_query(
             status_code=500,
             detail=f"Internal server error: {str(e)}"
         )
+
+
+@app.get(
+    path="/sample",
+    tags=["AI Co-Scientist"],
+    response_model=SampleQueryResponse,
+    response_description="Generated Sample Query",
+    description="Generate a sample scientific query for testing the hypothesis generation system",
+    name="Generate Sample Query",
+)
+async def generate_sample_query_endpoint(
+    api_key: str = Depends(get_api_key),
+):
+    """
+    Generate a sample scientific query using the deployed Gemma 3 12B model.
+    
+    This endpoint creates diverse, high-quality scientific research queries
+    suitable for testing the AI Co-Scientist hypothesis generation pipeline.
+    """
+    
+    try:
+        logger.info("Generating sample scientific query")
+        
+        # Generate query using Gemma 3 12B
+        generated_query = generate_sample_query()
+        
+        # Create response object
+        response = SampleQueryResponse(
+            generated_query=generated_query
+        )
+        
+        logger.info(f"Successfully generated sample query")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error generating sample query: {str(e)}")
+        raise FastAPIHTTPException(
+            status_code=500,
+            detail=f"Failed to generate sample query: {str(e)}"
+        )
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=4)

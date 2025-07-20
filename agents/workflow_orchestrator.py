@@ -206,7 +206,7 @@ class AICoScientistWorkflow:
                 AgentOutput(
                     agent_name="proximity_agent",
                     output=f"Retrieved knowledge context for {len(hypotheses)} hypotheses",
-                    metadata={"knowledge_analyses": knowledge_analyses, "model": "gemma2-9b-it"}
+                    metadata={"knowledge_analyses": knowledge_analyses, "model": "meta-llama/llama-4-scout-17b-16e-instruct"}
                 )
             ]
         )
@@ -256,7 +256,7 @@ class AICoScientistWorkflow:
                 AgentOutput(
                     agent_name="ranking_agent",
                     output=f"Ranked {len(hypotheses)} hypotheses by novelty and feasibility",
-                    metadata={"ranked_hypotheses": ranked_hypotheses, "model": "gemma2-9b-it"}
+                    metadata={"ranked_hypotheses": ranked_hypotheses, "model": "qwen/qwen3-32b"}
                 )
             ]
         )
