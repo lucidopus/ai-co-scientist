@@ -1,6 +1,5 @@
 # 🧬 AI Co-Scientist
-
-DEMO: https://youtu.be/-SYB2mfPJSo
+https://youtu.be/89Gq8mapY8w
 
 A sophisticated multi-agent AI system that generates novel scientific hypotheses through collaborative agent-based reasoning. Built for scientific research acceleration and hypothesis discovery.
 
@@ -143,20 +142,7 @@ The system uses specialized AI models for different phases:
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables:**
-   Create a `.env` file in the root directory:
-   ```env
-   API_KEY=your_secret_api_key
-   GEMMA_SERVICE_URL=https://your-gemma-service.run.app
-   GROQ_API_KEY=your_groq_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   TAVILY_API_KEY=your_tavily_api_key
-   MONGODB_URI=mongodb://localhost:27017
-   DATABASE=ai_co_scientist
-   REQUESTS_COLLECTION=requests
-   ```
-
-5. **Deploy Gemma 3 12B (Required):**
+4. **Deploy Gemma 3 12B:**
    Follow the detailed guide in `docs/MODEL_DEPLOYMENT.md` to deploy Gemma 3 12B on Google Cloud Run with L4 GPU.
 
 ### Start the API server:
@@ -265,31 +251,7 @@ ai-co-scientist/
 ├── requirements.txt          # Python dependencies
 └── README.md                 # This file
 ```
-
-## 🧪 Testing
-
-Run the test suite:
-```bash
-# Unit tests
-python -m pytest tests/
-
-# Integration tests
-python test_integration.py
-
-# Agent-specific tests
-python test_adk_agents.py
-```
-
 ## 🔧 Configuration
-
-### Model Configuration
-The system uses different models optimized for specific tasks:
-
-- **Generation**: Gemma 3 12B (deployed on L4 GPU)
-- **Critique**: OpenAI o3-mini
-- **Ranking**: Qwen 3 32B via GROQ
-- **Evolution**: Llama 3.3 70B via GROQ
-- **Knowledge**: Llama 4 Scout 17B via GROQ
 
 ### Performance Settings
 - **Concurrency**: 4 simultaneous requests per instance
@@ -305,12 +267,6 @@ The system provides comprehensive colored terminal output including:
 - 🤖 Agent activity logs with timing information
 - 📊 Hypothesis summaries with scoring metrics
 - ✅ Success/error indicators with detailed messages
-
-### Logging
-Detailed logging is available in:
-- `ai_co_scientist_YYYYMMDD.log` - Application logs
-- Google Cloud Run logs for Gemma 3 12B service
-- MongoDB query logs (if enabled)
 
 ## 💾 Data Storage
 
@@ -333,11 +289,6 @@ Enhanced memory service stores:
 - **Idle time**: $0/hour (scales to zero)
 - **Monthly estimates**: $31-124 depending on usage
 
-### Model API Costs
-- **GROQ**: $0.59 per 1M input tokens
-- **OpenAI o3-mini**: $0.60 per 1M input tokens
-- **Tavily Search**: $5 per 1K searches
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -350,18 +301,10 @@ Enhanced memory service stores:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **Google Cloud** for Gemma 3 12B model and L4 GPU infrastructure
-- **GROQ** for high-performance LLM inference
-- **OpenAI** for advanced reasoning capabilities
-- **Tavily** for knowledge retrieval services
-- **MongoDB** for data persistence solutions
-
 ## 📞 Support
 
 For questions, issues, or contributions:
-- 📧 Email: [Support Contact]
+- 📧 Email: [Support Contact](harshilpatel30402@gmail.com)
 - 🐛 Issues: [GitHub Issues](https://github.com/your-/ai-co-scientist/issues)
 - 📖 Docs: See the `docs/` directory for detailed guides
 
