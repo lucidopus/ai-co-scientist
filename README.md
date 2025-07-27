@@ -9,17 +9,22 @@ AI Co-Scientist is an advanced research tool that employs multiple specialized A
 
 ### 🏗️ System Architecture
 
-The system implements a sophisticated 6-stage multi-agent pipeline:
+The system implements a sophisticated **intelligent orchestrated** 6-stage multi-agent pipeline with **Claude Opus 4** as the orchestration brain:
 
-1. **🔬 Generation Agent** - Creates novel scientific hypotheses using **Gemma 3 12B**
-2. **📚 Proximity Agent** - Retrieves and analyzes relevant knowledge using Llama 4 Scout 17B
-3. **🔍 Reflection Agent** - Provides scientific critique and evaluation using OpenAI o3-mini
-4. **📊 Ranking Agent** - Ranks hypotheses by multiple criteria using Qwen 3 32B
-5. **🧬 Evolution Agent** - Refines and evolves top hypotheses using Llama 3.3 70B
-6. **📋 Meta-Review Agent** - Conducts final review and experimental planning using OpenAI o3-mini
+**🧠 Smart Orchestrator** - **Claude Opus 4** analyzes tasks and assigns optimal models based on task requirements
+
+1. **🔬 Generation Agent** - Creates novel scientific hypotheses using **dynamically assigned model**
+2. **📚 Proximity Agent** - Retrieves and analyzes relevant knowledge using **dynamically assigned model**
+3. **🔍 Reflection Agent** - Provides scientific critique and evaluation using **dynamically assigned model**
+4. **📊 Ranking Agent** - Ranks hypotheses by multiple criteria using **dynamically assigned model**
+5. **🧬 Evolution Agent** - Refines and evolves top hypotheses using **dynamically assigned model**
+6. **📋 Meta-Review Agent** - Conducts final review and experimental planning using **dynamically assigned model**
 
 ## 🚀 Key Features
 
+- **🧠 Intelligent Orchestration**: **Claude Opus 4** dynamically assigns optimal models based on task analysis
+- **🎯 Smart Model Selection**: 9 specialized models automatically matched to task requirements
+- **📊 Model Strengths Database**: Comprehensive mapping of model capabilities and strengths
 - **Multi-Model Architecture**: Leverages the strengths of different LLMs for specialized tasks
 - **Scientific Rigor**: Implements critique, ranking, and evolution cycles for hypothesis refinement
 - **Knowledge Integration**: Incorporates external knowledge retrieval and literature analysis
@@ -97,15 +102,29 @@ GET /health
 
 ## 🏗️ Architecture
 
-### Multi-Agent System
-The system uses specialized AI models for different phases:
+### Intelligent Multi-Agent System
 
-1. **Generation Agent** - **Gemma 3 12B** (deployed on Google Cloud L4 GPU): Novel hypothesis generation
-2. **Proximity Agent** - Llama 4 Scout 17B: Knowledge retrieval and grounding
-3. **Reflection Agent** - OpenAI o3-mini: Scientific critique and evaluation
-4. **Ranking Agent** - Qwen 3 32B: Multi-criteria hypothesis ranking
-5. **Evolution Agent** - Llama 3.3 70B: Iterative hypothesis refinement
-6. **Meta-Review Agent** - OpenAI o3-mini: Final review and experimental planning
+The system features **Claude Opus 4** as the orchestration brain that dynamically assigns optimal models from 9 available options:
+
+#### **🧠 Smart Orchestrator**
+- **Claude Opus 4**: Analyzes tasks and assigns optimal models based on requirements and strengths
+
+#### **Available Models for Dynamic Assignment:**
+1. **Llama 3.3 70B**: Complex reasoning and hypothesis generation
+2. **Qwen 3 32B**: Advanced mathematical and logical reasoning  
+3. **Gemma 3 12B**: Efficient processing with Google Cloud L4 GPU acceleration
+4. **Llama 4 Scout**: Exploration and discovery tasks
+5. **GPT o3 mini**: Workflow orchestration and agent coordination
+6. **Mistral 7B**: Specialized analysis and critique tasks
+7. **Gemini 2.5 Pro**: Advanced multimodal reasoning tasks
+8. **Claude Opus 4**: Comprehensive scientific review and analysis
+9. **DeepSeek R1**: Deep reasoning and reflection tasks
+
+#### **Agent Assignment Process:**
+1. **Task Analysis**: Claude Opus 4 analyzes each workflow step
+2. **Model Matching**: Optimal model selected based on task requirements and model strengths
+3. **Dynamic Assignment**: Agents receive the best-suited model for their specific task
+4. **Performance Tracking**: System monitors model assignments and performance
 
 ### Gemma 3 12B Usage Areas
 - **Query Generation**: Powers the `/sample` endpoint for generating scientific research queries
@@ -118,6 +137,7 @@ The system uses specialized AI models for different phases:
 - Python 3.8+
 - Google Cloud account (for Gemma 3 12B deployment)
 - API keys for required services:
+  - **Anthropic API** (for Claude Opus 4 orchestrator) 🆕
   - GROQ API (for Llama models)
   - OpenAI API (for o3-mini)
   - Tavily API (for knowledge retrieval)
@@ -232,16 +252,18 @@ print(f"Generated {len(results['hypotheses'])} hypotheses in {results['total_pro
 ```
 ai-co-scientist/
 ├── agents/                    # Multi-agent system components
-│   ├── generation_agent.py   # Hypothesis generation (Gemma 3 12B)
-│   ├── reflection_agent.py   # Scientific critique (o3-mini)
-│   ├── ranking_agent.py      # Hypothesis ranking (Qwen 3 32B)
-│   ├── evolution_agent.py    # Hypothesis evolution (Llama 3.3 70B)
-│   ├── proximity_agent.py    # Knowledge retrieval (Llama 4 Scout)
-│   └── meta_review_agent.py  # Final review (o3-mini)
+│   ├── smart_orchestrator.py        # 🧠 Intelligent orchestrator (Claude Opus 4) 🆕
+│   ├── enhanced_workflow_orchestrator.py  # 🚀 Enhanced pipeline with smart orchestration 🆕
+│   ├── generation_agent.py          # Hypothesis generation (dynamically assigned)
+│   ├── reflection_agent.py          # Scientific critique (dynamically assigned)
+│   ├── ranking_agent.py             # Hypothesis ranking (dynamically assigned)
+│   ├── evolution_agent.py           # Hypothesis evolution (dynamically assigned)
+│   ├── proximity_agent.py           # Knowledge retrieval (dynamically assigned)
+│   └── meta_review_agent.py         # Final review (dynamically assigned)
 ├── utils/                     # Core utilities and services
-│   ├── pipelines.py          # Main processing pipeline
+│   ├── pipelines.py          # 🚀 Enhanced pipeline with smart orchestration 🆕
 │   ├── helper.py             # Gemma 3 12B client functions
-│   ├── config.py             # Environment configuration
+│   ├── config.py             # 📊 Environment + MODEL_STRENGTHS database 🆕
 │   ├── models.py             # Pydantic data models
 │   └── memory_service.py     # Enhanced memory management
 ├── docs/                      # Documentation
@@ -251,6 +273,53 @@ ai-co-scientist/
 ├── requirements.txt          # Python dependencies
 └── README.md                 # This file
 ```
+## 🧠 Intelligent Orchestration System
+
+### **How Smart Model Assignment Works**
+
+The AI Co-Scientist now features an **intelligent orchestration system** powered by **Claude Opus 4** that automatically assigns the optimal model for each task:
+
+#### **🔍 Task Analysis Process**
+1. **Query Analysis**: Claude Opus 4 analyzes the incoming scientific query
+2. **Workflow Decomposition**: Breaks down the workflow into individual tasks
+3. **Requirement Mapping**: Maps each task's requirements to model capabilities
+4. **Optimal Assignment**: Selects the best model based on MODEL_STRENGTHS database
+
+#### **📊 Model Strengths Database**
+Each model is characterized by its core strengths:
+
+- **Llama 3.3 70B**: Complex reasoning, hypothesis generation, creative problem-solving
+- **Qwen 3 32B**: Mathematical reasoning, quantitative analysis, precise calculations
+- **Gemma 3 12B**: Efficient processing, fast inference, resource optimization
+- **Llama 4 Scout**: Exploration, discovery, novel approach generation
+- **GPT o3 mini**: Workflow orchestration, task coordination, systematic planning
+- **Mistral 7B**: Specialized analysis, critical evaluation, detailed assessment
+- **Gemini 2.5 Pro**: Multimodal reasoning, visual analysis, integrated processing
+- **Claude Opus 4**: Comprehensive analysis, thorough evaluation, scientific rigor
+- **DeepSeek R1**: Deep reasoning, reflection, metacognitive analysis
+
+#### **🎯 Dynamic Assignment Examples**
+- **Hypothesis Generation** → Assigned to **Llama 3.3 70B** for complex reasoning
+- **Mathematical Analysis** → Assigned to **Qwen 3 32B** for quantitative tasks
+- **Critical Review** → Assigned to **Mistral 7B** for specialized analysis
+- **Final Meta-Review** → Assigned to **Claude Opus 4** for comprehensive evaluation
+
+#### **📈 Performance Optimization**
+- **Task-Model Matching**: Ensures each task uses the most suitable model
+- **Quality Improvement**: Better results through optimal model selection
+- **Resource Efficiency**: Avoids over/under-powered model usage
+- **Adaptive Learning**: System learns from assignment performance
+
+### **Configuration Options**
+
+```python
+# Enable/disable intelligent orchestration
+use_smart_orchestration = True  # Default: True
+
+# Use legacy fixed assignments
+use_smart_orchestration = False
+```
+
 ## 🔧 Configuration
 
 ### Performance Settings
